@@ -1,0 +1,20 @@
+.array-container {
+    position: absolute;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+}
+
+.array-bar {
+    width: 1vw;
+    background-color: black;
+    display: inline-block;
+    margin: 0 1px;
+}
+
+.button-container {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+}
