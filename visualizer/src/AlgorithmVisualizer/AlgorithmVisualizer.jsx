@@ -1,6 +1,14 @@
 import React from 'react';
 import './AlgorithmVisualizer.css';
-import * as sortingAlgorithms from '../sortingAlgorithms/sortingAlgorithms.js';
+import {getMergeSortAnimations} from '../sortingAlgorithms/sortingAlgorithms.js';
+
+const ANIMATION_SPEED_MS = 5;
+
+const NUM_ARRAY_BARS = 50;
+
+const PRIMARY_COLOR = 'black';
+
+const SECONDARY_COLOR = 'red';
 
 export default class AlgorithmVisualizer extends React.Component {
     constructor(props) {
@@ -17,20 +25,34 @@ export default class AlgorithmVisualizer extends React.Component {
 
     resetArray() {
         const array = [];
-        for (let i = 0; i < 70; i++) {
+        for (let i = 0; i < NUM_ARRAY_BARS; i++) {
             array.push(randomIntFromInterval(5, 700));
         }
         this.setState({array});
     }
 
     mergeSort() {
-        const javaScriptSortedArray = this.state.array
-        .slice()
-        .sort((a, b) => a - b);
-        const sortedArray = sortingAlgorithms.mergeSort(this.state.array);
-        console.log(sortedArray);
-
-        console.log(arraysAreEqual(javaScriptSortedArray, sortedArray));
+        const animations = getMergeSortAnimations(this.state.array);
+        for (let i = 0; i < animations.length; i++) {
+            const arrayBars = document.getElementsByClassName('array-bar');
+            const isColorChange = i % 3 !== 2;
+            if (isColorChange) {
+                const [barOneIdx, barTwoIdx] = animations[i];
+                const barOneStyle = arrayBars[barOneIdx].style;
+                const barTwoStyle = arrayBars[barTwoIdx].style;
+                const color = i % 3 === 0 ? SECONDARY_COLOR : PRIMARY_COLOR;
+                setTimeout(() => {
+                    barOneStyle.backgroundColor = color;
+                    barTwoStyle.backgroundColor = color;
+                }, i * ANIMATION_SPEED_MS);
+            } else {
+                setTimeout(() => {
+                    const [barOneIdx, newHeight] = animations[i];
+                    const barOneStyle = arrayBars[barOneIdx].style;
+                    barOneStyle.height = `${newHeight}px`;
+                }, i * ANIMATION_SPEED_MS);
+            }
+        }
     }
 
     testSortingAlgorithms() {
@@ -41,8 +63,8 @@ export default class AlgorithmVisualizer extends React.Component {
                 array.push(randomIntFromInterval(-1000, 1000));
             }
             const javaScriptSortedArray = array.slice().sort((a, b) => a - b);
-            const mergeSortedArray = sortingAlgorithms.mergeSort(array.slice());
-            console.log(arraysAreEqual(javaScriptSortedArray, mergeSortedArray));
+            // const mergeSortedArray = sortingAlgorithms.mergeSort(array.slice());
+            // console.log(arraysAreEqual(javaScriptSortedArray, mergeSortedArray));
         }
     }
 
@@ -56,13 +78,16 @@ export default class AlgorithmVisualizer extends React.Component {
                         <div 
                         className="array-bar" 
                         key={idx}
-                        style={{height: `${value}px`}}></div>
+                        style={{
+                            backgroundColor: PRIMARY_COLOR,
+                            height: `${value}px`
+                        }}></div>
                     ))}
                 </div>
                 <div className="button-container">
                     <button onClick={() => this.resetArray()}>Generate New Array</button>
                     <button onClick={() => this.mergeSort()}>Merge Sort</button>
-                    <button onClick={() => this.testSortingAlgorithms()}>Run Correctness Tests</button>
+                    <button onClick={() => this.testSortingAlgorithms()}>Test Algorithms</button>
                 </div>
             </>
         );
